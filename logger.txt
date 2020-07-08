@@ -1,0 +1,126 @@
+23:14:27, INFO 
+Initializing multi tracker
+23:14:27, INFO 
++----+------+----------------------------+---------+-----+
+| ID | Type |            xywh            | Tracker | FWD |
++----+------+----------------------------+---------+-----+
+| 0  |  1   | (2570, 1069, 339.0, 133.0) |   CSRT  |  0  |
+| 1  |  1   | (455, 1207, 276.0, 128.0)  |   CSRT  |  0  |
++----+------+----------------------------+---------+-----+
+23:14:39, INFO 
+Adding new detections
+23:14:39, DEBUG 
+Reinitialize Object id: 0 of type: 1 due large overlap
+23:14:51, INFO 
+Adding new detections
+23:14:51, DEBUG 
+Reinitialize Object id: 0 of type: 1 due large overlap
+23:14:51, DEBUG 
+Reinitialize Object id: 1 of type: 1 due large overlap
+23:14:51, INFO 
++----+------+------------------------+---------+-----+
+| ID | Type |          xywh          | Tracker | FWD |
++----+------+------------------------+---------+-----+
+| 0  |  1   | (2612, 1314, 380, 148) |   CSRT  |  0  |
+| 1  |  1   | (222, 1443, 418, 180)  |   CSRT  |  0  |
+| 2  |  1   | (1994, 1342, 317, 139) |   CSRT  |  0  |
++----+------+------------------------+---------+-----+
+23:15:10, INFO 
+Adding new detections
+23:15:10, DEBUG 
+Reinitialize Object id: 0 of type: 1 due large overlap
+23:15:10, DEBUG 
+Reinitialize Object id: 1 of type: 1 due large overlap
+23:15:10, DEBUG 
+Reinitialize Object id: 2 of type: 1 due large overlap
+23:15:10, INFO 
++----+------+------------------------+---------+-----+
+| ID | Type |          xywh          | Tracker | FWD |
++----+------+------------------------+---------+-----+
+| 0  |  1   | (2651, 1453, 387, 156) |   CSRT  |  0  |
+| 1  |  1   | (142, 1598, 418, 182)  |   CSRT  |  0  |
+| 2  |  1   | (1993, 1464, 332, 150) |   CSRT  |  0  |
++----+------+------------------------+---------+-----+
+23:15:28, INFO 
+Adding new detections
+23:15:28, DEBUG 
+Reinitialize Object id: 0 of type: 1 due large overlap
+23:15:28, DEBUG 
+Reinitialize Object id: 1 of type: 1 due large overlap
+23:15:28, DEBUG 
+Reinitialize Object id: 2 of type: 1 due large overlap
+23:15:29, INFO 
++----+------+------------------------+---------+-----+
+| ID | Type |          xywh          | Tracker | FWD |
++----+------+------------------------+---------+-----+
+| 0  |  1   | (2687, 1601, 413, 156) |   CSRT  |  0  |
+| 1  |  1   |  (13, 1743, 447, 197)  |   CSRT  |  0  |
+| 2  |  1   | (1982, 1617, 361, 155) |   CSRT  |  0  |
++----+------+------------------------+---------+-----+
+23:15:47, INFO 
+Adding new detections
+23:15:47, DEBUG 
+Reinitialize Object id: 0 of type: 1 due large overlap
+23:15:47, DEBUG 
+Reinitialize Object id: 1 of type: 1 due large overlap
+23:16:08, INFO 
+Adding new detections
+23:16:08, DEBUG 
+Reinitialize Object id: 0 of type: 1 due large overlap
+23:16:08, DEBUG 
+Reinitialize Object id: 1 of type: 1 due large overlap
+23:16:27, INFO 
+Adding new detections
+23:16:27, DEBUG 
+Reinitialize Object id: 0 of type: 1 due large overlap
+23:16:44, INFO 
+No detections added
+23:17:00, INFO 
+No detections added
+23:17:16, INFO 
+No detections added
+23:17:33, INFO 
+No detections added
+23:17:50, INFO 
+No detections added
+23:18:07, INFO 
+No detections added
+23:18:25, INFO 
+No detections added
+23:18:44, INFO 
+No detections added
+23:19:03, INFO 
+No detections added
+23:19:22, INFO 
+No detections added
+23:19:42, INFO 
+No detections added
+23:20:02, INFO 
+No detections added
+23:20:22, INFO 
+No detections added
+23:20:41, INFO 
+Adding new detections
+23:20:41, INFO 
++----+------+---------------------------------------------------------------------------------+---------+-----+
+| ID | Type |                                       xywh                                      | Tracker | FWD |
++----+------+---------------------------------------------------------------------------------+---------+-----+
+| 0  |  1   |   (2930.2548828125, 2081.056396484375, 499.0190124511719, 145.09786987304688)   |   CSRT  |  0  |
+| 1  |  1   | (-3.2715072631835938, 1850.400634765625, 131.50723266601562, 49.50271987915039) |   CSRT  |  0  |
+| 2  |  1   |   (646.521728515625, 2035.85595703125, 558.0977172851562, 239.62643432617188)   |   CSRT  |  0  |
+| 3  |  1   |                              (457, 1359, 246, 127)                              |   CSRT  |  0  |
++----+------+---------------------------------------------------------------------------------+---------+-----+
+23:21:05, INFO 
+Adding new detections
+23:21:05, DEBUG 
+Reinitialize Object id: 3 of type: 1 due large overlap
+23:21:05, INFO 
++----+------+--------------------------------------------------------------------------------+---------+-----+
+| ID | Type |                                      xywh                                      | Tracker | FWD |
++----+------+--------------------------------------------------------------------------------+---------+-----+
+| 0  |  1   |   (2596.64697265625, 2097.220703125, 417.55682373046875, 121.41140747070312)   |   CSRT  |  0  |
+| 1  |  1   | (-5.757621765136719, 2001.020751953125, 131.50723266601562, 49.50271987915039) |   CSRT  |  0  |
+| 2  |  1   |  (789.3727416992188, 2036.79052734375, 569.2596435546875, 244.41896057128906)  |   CSRT  |  0  |
+| 3  |  1   |                             (258, 1463, 303, 166)                              |   CSRT  |  0  |
+| 4  |  1   |                             (1471, 1780, 277, 235)                             |   CSRT  |  0  |
++----+------+--------------------------------------------------------------------------------+---------+-----+

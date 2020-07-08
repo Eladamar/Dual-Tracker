@@ -1,3 +1,15 @@
+# video files
 *.mp4
+*.mov
+
 venv/*
 venv
+yolo/weights
+yolo/__pycache__
+*.ipynb_checkpoints/
+trash
+output
+__pycache__/
+*.pyc
+*.ipynb
+*.sh

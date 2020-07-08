@@ -1,5 +1,6 @@
+import os
 import numpy as np
-
+import logging
 
 def bbox_iou(box1, box2, x1y1x2y2=False):
     """
@@ -9,6 +10,7 @@ def bbox_iou(box1, box2, x1y1x2y2=False):
         box1 = box1[np.newaxis, :]
     if box2.ndim == 1:
         box2 = box2[np.newaxis, :]
+        
     if not x1y1x2y2:
         # Transform from xywh
         b1_x1, b1_x2 = box1[:, 0], box1[:, 0] + box1[:, 2]
@@ -46,6 +48,7 @@ def bbox_distance(box1, box2, x1y1x2y2=False):
         box1 = box1[np.newaxis, :]
     if box2.ndim == 1:
         box2 = box2[np.newaxis, :]
+        
     if not x1y1x2y2:
         # Transform from xywh to get centers
         b1_xctr = box1[:, 0] + box1[:, 2] / 2
@@ -64,3 +67,22 @@ def bbox_distance(box1, box2, x1y1x2y2=False):
     dist = np.sqrt(dist)
 
     return dist
+
+
+def get_logger(mode='info', logger_file='logger.txt'):
+    if mode == 'info':
+        level = logging.INFO
+    elif mode == 'debug':
+        level = logging.DEBUG
+    else:
+        raise Exception("No such logger mode")
+    
+    if os.path.exists(logger_file):
+        os.remove(logger_file)
+    logging.basicConfig(filename=logger_file,
+                            filemode='a',
+                            format='%(asctime)s, %(levelname)s \n%(message)s',
+                            datefmt='%H:%M:%S',
+                            level=level)
+    logger = logging.getLogger()
+    return logger
