@@ -98,6 +98,8 @@ class YOLOv3:
             color = bbox_colors[int(np.where(unique_labels == int(cls))[0])]
             cv2.rectangle(img, (x1,y1), (x2,y2), color, thickness=thickness, lineType=cv2.LINE_AA)
             cv2.putText(img, self.classes[int(cls)], (x1, y1 - 2), 0, thickness / 3, [225, 255, 255], thickness=thickness, lineType=cv2.LINE_AA)
+            
+        return img
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
