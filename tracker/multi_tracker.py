@@ -28,7 +28,7 @@ def create_tracker_by_type(tracker_type):
         tracker = cv2.TrackerMOSSE_create()
     elif tracker_type == 'CSRT':
         tracker = cv2.TrackerCSRT_create()
-        fs_settings = cv2.FileStorage("./settings.yaml", cv2.FILE_STORAGE_READ)
+        fs_settings = cv2.FileStorage("./tracker/cfg/csrt_settings.yaml", cv2.FILE_STORAGE_READ)
         tracker.read(fs_settings.root())
     else:
         raise Exception(f"There is no tracker name: {tracker_type}")
