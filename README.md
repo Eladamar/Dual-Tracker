@@ -7,7 +7,7 @@
 Here implemented YOLOv3 with spatial pyramid pooling  
 trained on stanford dataset and visdrone. 
 spp:  
-![](./spp.PNG =250x250)
+![](./spp.PNG | width=100)
 
 
 
