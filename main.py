@@ -100,10 +100,10 @@ def main(detector_params, tracker_params, classes, logger_mode, video_path):
         # success, boxes = multiTracker.update(frame)
 
         # update all objects
-        start = time.time()
+#         start = time.time()
         success = multiTracker.update(frame)
-        end = time.time()
-        print("update ", end-start)
+#         end = time.time()
+#         print("update ", end-start)
         if success and k % 30 != 0:
             for i, obj in enumerate(multiTracker.objects):
                 if obj.frames_without_detection > 0:
