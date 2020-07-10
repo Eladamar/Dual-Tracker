@@ -5,12 +5,14 @@
 ## Detector
 
 Here implemented YOLOv3 with spatial pyramid pooling  
-trained on stanford dataset and visdrone. 
+trained on stanford dataset and visdrone.  
 spp:  
-![](./spp.PNG =100x100)
-<img src="./spp.PNG" height="500" width="250"/>
+<img src="./spp.PNG" height="500" width="300"/>  
+model is taken from [ultralytics](https://github.com/ultralytics/yolov3)
 
+## Tracker
 
+opencv trackers
 
 
 
