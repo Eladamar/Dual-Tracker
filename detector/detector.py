@@ -45,9 +45,16 @@ def resize(image, size):
 
 
 class YOLOv3:
-    def __init__(self, weights_path, config_file, classes, img_size=416):
+    def __init__(self, weights_path, 
+                 config_file, 
+                 classes, 
+                 img_size=416, 
+                 nms_thres=0.4, 
+                 conf_thres=0.6):
         self.classes = classes
         # Set up model
+        self.config_file = config_file
+        self.weights_path = weights_path
         self.model = Darknet(config_file, img_size=img_size).to(device)
         self.img_size = img_size
         if weights_path.endswith(".weights"):
@@ -56,10 +63,21 @@ class YOLOv3:
         else:
             # Load checkpoint weights
             self.model.load_state_dict(torch.load(weights_path, map_location=torch.device(device))['model'])
+        self.nms_thres = nms_thres
+        self.conf_thres = conf_thres
         
+    def __repr__(self):
+        head = "Yolo Detector:\n"
+        cfg = f"\tconfig_file={self.config_file}\nweights_path={self.weights_path}\n"
+        args = f"\tnms_thres={self.nms_thres}, conf_thres={self.conf_thres}, img_size={self.img_size}"
+        return head+cfg+args
         
-    def detect(self, frame, nms_thres=0.4, conf_thres=0.8):
-        
+    def detect(self, frame, nms_thres=None, conf_thres=None):
+        if nms_thres is None:
+            nms_thres = self.nms_thres
+        if conf_thres is None:
+            conf_thres = self.conf_thres
+            
         original_shape = frame.shape[:2] # h,w
         # Extract frame as PyTorch tensor
         if type(frame) is np.ndarray:
