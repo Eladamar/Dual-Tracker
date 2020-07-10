@@ -15,5 +15,6 @@ model is taken from [ultralytics](https://github.com/ultralytics/yolov3)
 used opencv trackers
 
 
-### papers used
-spp paper https://ieeexplore.ieee.org/stamp/stamp.jsp?arnumber=7005506
+### More References
+spp paper https://ieeexplore.ieee.org/stamp/stamp.jsp?arnumber=7005506  
+DCFCSR https://arxiv.org/pdf/1611.08461.pdf
