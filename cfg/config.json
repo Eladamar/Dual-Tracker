@@ -1,0 +1,19 @@
+{
+    "video_path": "traffic.mp4",
+    "logger_mode": "debug",
+    "classes":  ["person", "car", "bicycle", "motor", "bus", "truck"],
+    "Detector": {
+        "type": "YOLO",
+        "weights_path": "/home/eladamar/tracking/detector/weights/spp_background_anchors.pt",
+        "config_file": "/home/eladamar/tracking/detector/cfg/yolov3-spp.cfg",
+        "nms_thres": 0.4,
+        "conf_thres": 0.6
+    },
+    "Tracker": {
+        "no_detection_thres": 5,
+        "default_tracker": "CSRT",
+        "failures_threshold": 0.5,
+        "iou_thres": 0.1,
+        "dist_thres": 100
+    }
+}

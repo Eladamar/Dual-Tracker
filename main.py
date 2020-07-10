@@ -7,12 +7,14 @@ import cv2
 import time
 import numpy as np
 from random import randint
+import json
+import argparse
 
 import torch
 import torchvision
 
 from detector.detector import YOLOv3
-from tracker.multi_tracker import MultiTracker
+from trackers.multi_tracker import MultiTracker
 from utils.utils import get_logger
 
 import matplotlib.pyplot as plt
@@ -21,23 +23,28 @@ import matplotlib.pyplot as plt
 
 # from IPython.display import clear_output, Image, display
 
-def main():
-    classes = ['person', 'car', 'bicycle', 'motor', 'bus', 'truck']
+def main(detector_params, tracker_params, classes, logger_mode, video_path):
+    #classes = ['person', 'car', 'bicycle', 'motor', 'bus', 'truck']
 
-    weights_path = '/home/eladamar/tracking/detector/weights/spp_background_anchors.pt'
-    config_file = '/home/eladamar/tracking/detector/cfg/yolov3-spp.cfg'
+#     weights_path = '/home/eladamar/tracking/detector/weights/spp_background_anchors.pt'
+#     config_file = '/home/eladamar/tracking/detector/cfg/yolov3-spp.cfg'
     
     # create logger
-    logger = get_logger(mode='debug')
+    logger = get_logger(mode=logger_mode)
 
     # initiate detector
-    detector = YOLOv3(weights_path, config_file, classes)
+    detector_type = detector_params.pop("type")
+    if detector_type == "YOLO":
+        detector = YOLOv3(classes=classes, **detector_params)
+        logger.info(f"Loaded detector:\n{detector}")
+    else:
+        raise ValueError(f'Detector type: {model_type} is not implemented')
 
-    # Set video to load
-    videoPath = "drone-neigh.mp4"
+#     # Set video to load
+#     videoPath = "traffic.mp4"
 
     # Create a video capture object to read videos
-    cap = cv2.VideoCapture(videoPath)
+    cap = cv2.VideoCapture(video_path)
 
     # Read first frame
     success, frame = cap.read()
@@ -53,13 +60,14 @@ def main():
     frame = detector.draw(detections, frame)
     plt.imsave("initial_frame.png", frame)
 
-    # Specify the tracker type
-    trackerType = "CSRT"
+#     # Specify the tracker type
+#     trackerType = "CSRT"
 
     # Create MultiTracker object
     # multiTracker = cv2.MultiTracker_create()
-    multiTracker = MultiTracker(logger=logger, classes=classes)
-
+    multiTracker = MultiTracker(logger=logger, classes=classes, **tracker_params)
+    logger.info(f"Loaded multi tracker: {vars(multiTracker)}")
+    
     detections = detections.cpu().numpy()
 
     # Initialize MultiTracker
@@ -67,6 +75,7 @@ def main():
 
     # video parameters
     fps = cap.get(cv2.CAP_PROP_FPS)
+    logger.info(f"input video FPS: {fps}")
     width  = int(cap.get(3)) // 4 # width
     height = int(cap.get(4)) // 4 # height
     fourcc = cv2.VideoWriter_fourcc(*'XVID')
@@ -91,8 +100,10 @@ def main():
         # success, boxes = multiTracker.update(frame)
 
         # update all objects
+        start = time.time()
         success = multiTracker.update(frame)
-
+        end = time.time()
+        print("update ", end-start)
         if success and k % 30 != 0:
             for i, obj in enumerate(multiTracker.objects):
                 if obj.frames_without_detection > 0:
@@ -118,4 +129,16 @@ def main():
         
         
 if __name__ == "__main__":
-    main()
+    parser = argparse.ArgumentParser(
+    description='Activating Hybrid Tracker')
+    parser.add_argument('--cfg', type=str, default='cfg/config.json',
+                        help='Path to the config file')
+    args = parser.parse_args()
+    with open(args.cfg, 'r') as f:
+        cfg = json.load(f)
+    detector_params = cfg['Detector']
+    tracker_params = cfg['Tracker']
+    classes = cfg['classes']
+    logger_mode = cfg['logger_mode']
+    video_path = cfg.get('video_path', 'drone_neigh.mp4')
+    main(detector_params, tracker_params, classes, logger_mode, video_path)
