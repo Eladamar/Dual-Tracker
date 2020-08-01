@@ -2,7 +2,7 @@ import sys
 sys.path.append('/home/eladamar/tracking/detector')
 sys.path.append('/home/eladamar/tracking/detector/yolo_utils')
 sys.path.append('/home/eladamar/tracking/utils')
-
+import os
 import cv2
 import time
 import numpy as np
@@ -31,7 +31,8 @@ def main(detector_params, tracker_params, classes, logger_mode, video_path):
     
     # create logger
     logger = get_logger(mode=logger_mode)
-
+    begin_time = time.time()
+    
     # initiate detector
     detector_type = detector_params.pop("type")
     if detector_type == "YOLO":
@@ -76,14 +77,14 @@ def main(detector_params, tracker_params, classes, logger_mode, video_path):
     # video parameters
     fps = cap.get(cv2.CAP_PROP_FPS)
     logger.info(f"input video FPS: {fps}")
-    width  = int(cap.get(3)) // 4 # width
-    height = int(cap.get(4)) // 4 # height
+    width  = int(cap.get(3)) // 8 # width
+    height = int(cap.get(4)) // 8 # height
     fourcc = cv2.VideoWriter_fourcc(*'XVID')
     output = cv2.VideoWriter('demo.mp4', fourcc, fps, (width,height), isColor=True)
 
     k=0
     while cap.isOpened():
-        k +=1 
+        k += 1 
         success, frame = cap.read()
         if not success:
             cap.release()
@@ -100,11 +101,13 @@ def main(detector_params, tracker_params, classes, logger_mode, video_path):
         # success, boxes = multiTracker.update(frame)
 
         # update all objects
-#         start = time.time()
-        success = multiTracker.update(frame)
-#         end = time.time()
-#         print("update ", end-start)
-        if success and k % 30 != 0:
+        start = time.time()
+        success = multiTracker.parallel_update(frame)
+
+#         success = multiTracker.update(frame)
+        end = time.time()
+        print("update ", end-start)
+        if success and k % 60 != 0:
             for i, obj in enumerate(multiTracker.objects):
                 if obj.frames_without_detection > 0:
                     continue
@@ -125,9 +128,11 @@ def main(detector_params, tracker_params, classes, logger_mode, video_path):
         cv2.putText(frame, f"FPS: {(int(fps))}", (75, 75), 0, thickness/3, (50, 170, 50), thickness)
 
         resize = cv2.resize(frame, (width, height), interpolation=cv2.INTER_LINEAR)
-        output.write(cv2.cvtColor(resize, cv2.COLOR_RGB2BGR))
+        if k%3 == 0:
+            output.write(cv2.cvtColor(resize, cv2.COLOR_RGB2BGR))
         
-        
+    logger.debug(f"Total time: {time.time()-begin_time}")
+    
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
     description='Activating Hybrid Tracker')
@@ -141,4 +146,6 @@ if __name__ == "__main__":
     classes = cfg['classes']
     logger_mode = cfg['logger_mode']
     video_path = cfg.get('video_path', 'drone_neigh.mp4')
+    if not os.path.isfile(video_path):
+        raise ValueError(f"video: {video_path} does not exist")
     main(detector_params, tracker_params, classes, logger_mode, video_path)
