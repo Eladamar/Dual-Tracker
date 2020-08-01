@@ -1,5 +1,5 @@
 {
-    "video_path": "traffic.mp4",
+    "video_path": "data/input/moving_cars.mp4",
     "logger_mode": "debug",
     "classes":  ["person", "car", "bicycle", "motor", "bus", "truck"],
     "Detector": {
@@ -10,7 +10,7 @@
         "conf_thres": 0.6
     },
     "Tracker": {
-        "no_detection_thres": 5,
+        "no_detection_thres": 0,
         "default_tracker": "CSRT",
         "failures_threshold": 0.5,
         "iou_thres": 0.1,
