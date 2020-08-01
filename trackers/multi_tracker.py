@@ -32,7 +32,8 @@ def create_tracker_by_type(tracker_type):
         tracker = cv2.TrackerMOSSE_create()
     elif tracker_type == 'CSRT':
         tracker = cv2.TrackerCSRT_create()
-        fs_settings = cv2.FileStorage("./tracker/cfg/csrt_settings.yaml", cv2.FILE_STORAGE_READ)
+        # Todo - not hardcoded and add checks
+        fs_settings = cv2.FileStorage("./trackers/cfg/csrt_settings.yaml", cv2.FILE_STORAGE_READ)
         tracker.read(fs_settings.root())
     else:
         raise Exception(f"There is no tracker name: {tracker_type}")
@@ -79,8 +80,21 @@ class Object(MP.Process):
 
     def get_metadata(self):
         return [self.id, self.class_type, self.bbox, self.tracker_type, self.frames_without_detection]
-        
 
+
+class ParallelUpdates(MP.Process):
+    def __init__(self, obj, frame, queue):
+        super(ParallelUpdates, self).__init__()
+        self.obj = obj
+        self.frame = frame
+        self.queue = queue
+        self.ok = None
+    
+    def run(self):
+        ok = self.obj.update(self.frame)
+        self.queue.put(ok)
+        
+        
 class MultiTracker:
     def __init__(self, default_tracker='CSRT',
                 failures_threshold=0.5,
@@ -115,7 +129,27 @@ class MultiTracker:
         self.objects.append(obj)
         return obj
 
+    def parallel_update(self, frame):
+        jobs = []
+        queue = MP.Queue()
+        for i, obj in enumerate(self.objects):
+            p = ParallelUpdates(obj, frame, queue)
+            jobs.append(p)
+            p.start()
+            
+        [p.join() for p in jobs]
+        
+        number_of_fails = 0
+        while not queue.empty():
+            ok = queue.get()
+            number_of_fails += 1 - int(ok)
+        fails_percentage = float(number_of_fails)/float(len(self.objects))
+        self.logger.debug(f"fails_percentage: {(fails_percentage*100):.2f}%")
+        if fails_percentage < self.failures_threshold:
+            return True
+        return False
 
+    
     def update(self, frame):
         number_of_fails = 0
         for i, obj in enumerate(self.objects):

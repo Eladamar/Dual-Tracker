@@ -26,4 +26,4 @@ use_segmentation: 1
 histogram_bins: 16
 background_ratio: 2
 histogram_lr: 3.9999999105930328e-02
-psr_threshold: 3.0000000000000000e-01
+psr_threshold: 1.000000000000000e-01
