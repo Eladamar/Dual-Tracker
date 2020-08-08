@@ -16,6 +16,7 @@ import torchvision
 from detector.detector import YOLOv3
 from trackers.multi_tracker import MultiTracker
 from utils.utils import get_logger
+from utils.frame_loader import get_frames_loader
 
 import matplotlib.pyplot as plt
 # plt.rcParams["figure.figsize"] = (14,14)
@@ -23,12 +24,9 @@ import matplotlib.pyplot as plt
 
 # from IPython.display import clear_output, Image, display
 
-def main(detector_params, tracker_params, classes, logger_mode, video_path):
+def main(detector_params, tracker_params, classes, logger_mode, frame_loader):
     #classes = ['person', 'car', 'bicycle', 'motor', 'bus', 'truck']
 
-#     weights_path = '/home/eladamar/tracking/detector/weights/spp_background_anchors.pt'
-#     config_file = '/home/eladamar/tracking/detector/cfg/yolov3-spp.cfg'
-    
     # create logger
     logger = get_logger(mode=logger_mode)
     begin_time = time.time()
@@ -41,57 +39,37 @@ def main(detector_params, tracker_params, classes, logger_mode, video_path):
     else:
         raise ValueError(f'Detector type: {model_type} is not implemented')
 
-#     # Set video to load
-#     videoPath = "traffic.mp4"
-
-    # Create a video capture object to read videos
-    cap = cv2.VideoCapture(video_path)
-
-    # Read first frame
-    success, frame = cap.read()
-    frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-    # quit if unable to read the video file
-    if not success:
-        print('Failed to read video')
+    frame = frame_loader.read_first_frame()
     
     # get first detections to initiate tracker
     detections = detector.detect(frame, nms_thres=0.4, conf_thres=0.6)
-#     print('detections:\n\t', detections)
-#     print(frame.shape[:2])
-    frame = detector.draw(detections, frame)
+
+    if detections is None or not len(detections):
+        logger.info("No detections for initla image")
+    else:
+        frame = detector.draw(detections, frame)
+        detections = detections.cpu().numpy()
+
     plt.imsave("initial_frame.png", frame)
 
-#     # Specify the tracker type
-#     trackerType = "CSRT"
-
-    # Create MultiTracker object
-    # multiTracker = cv2.MultiTracker_create()
     multiTracker = MultiTracker(logger=logger, classes=classes, **tracker_params)
     logger.info(f"Loaded multi tracker: {vars(multiTracker)}")
     
-    detections = detections.cpu().numpy()
-
     # Initialize MultiTracker
     multiTracker.initialize(frame, detections)
 
     # video parameters
-    fps = cap.get(cv2.CAP_PROP_FPS)
+    fps = frame_loader.fps
     logger.info(f"input video FPS: {fps}")
-    width  = int(cap.get(3)) // 8 # width
-    height = int(cap.get(4)) // 8 # height
+    width  = frame_loader.width
+    height = frame_loader.height 
     fourcc = cv2.VideoWriter_fourcc(*'XVID')
     output = cv2.VideoWriter('demo.mp4', fourcc, fps, (width,height), isColor=True)
 
-    k=0
-    while cap.isOpened():
-        k += 1 
-        success, frame = cap.read()
-        if not success:
-            cap.release()
-            output.release()
-            break
+    frame_generator = frame_loader.get_next_frame()
 
-        frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+    for kth, frame in enumerate(frame_generator):
+        k = kth + 1
         thickness = round(1e-3 * (frame.shape[0] + frame.shape[1]) / 2) + 1
 
         # Start timer
@@ -102,7 +80,7 @@ def main(detector_params, tracker_params, classes, logger_mode, video_path):
 
         # update all objects
         start = time.time()
-        success = multiTracker.parallel_update(frame)
+        success = multiTracker.update(frame)
 
 #         success = multiTracker.update(frame)
         end = time.time()
@@ -118,7 +96,6 @@ def main(detector_params, tracker_params, classes, logger_mode, video_path):
         else:
     #         cv2.putText(frame, "Tracking failure detected", (100, 80), 0, thickness, (0, 0, 255), thickness)
             detections = detector.detect(frame, nms_thres=0.4, conf_thres=0.6)
-            # Initialize MultiTracker
             multiTracker.new_detection(frame, detections)
 
         # Calculate Frames per second (FPS)
@@ -128,10 +105,12 @@ def main(detector_params, tracker_params, classes, logger_mode, video_path):
         cv2.putText(frame, f"FPS: {(int(fps))}", (75, 75), 0, thickness/3, (50, 170, 50), thickness)
 
         resize = cv2.resize(frame, (width, height), interpolation=cv2.INTER_LINEAR)
-        if k%3 == 0:
-            output.write(cv2.cvtColor(resize, cv2.COLOR_RGB2BGR))
-        
+#         if k % 3 == 0:
+        output.write(cv2.cvtColor(resize, cv2.COLOR_RGB2BGR))
+
+    output.release()
     logger.debug(f"Total time: {time.time()-begin_time}")
+
     
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
@@ -145,7 +124,9 @@ if __name__ == "__main__":
     tracker_params = cfg['Tracker']
     classes = cfg['classes']
     logger_mode = cfg['logger_mode']
-    video_path = cfg.get('video_path', 'drone_neigh.mp4')
-    if not os.path.isfile(video_path):
-        raise ValueError(f"video: {video_path} does not exist")
-    main(detector_params, tracker_params, classes, logger_mode, video_path)
+    
+    frames_path = cfg.get('frames_path', 'drone_neigh.mp4')
+    loader_name = cfg.get('frame_loader')
+    loader = get_frames_loader(loader_name)
+    frame_loader = loader(frames_path)
+    main(detector_params, tracker_params, classes, logger_mode, frame_loader)
