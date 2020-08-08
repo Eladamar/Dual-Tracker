@@ -99,9 +99,9 @@ class YOLOv3:
             if detections is not None and len(detections):
                 # Rescale boxes to original image size
                 detections[:, :4] = scale_coords(frame.shape[2:], detections[:, :4], original_shape).round()
-
-            # detection - nx6 (x1, y1, x2, y2, conf, cls))
-        return detections
+                # detection - nx6 (x1, y1, x2, y2, conf, cls))
+                return detections
+            return [] 
         
     def draw(self, detections, img):
         cmap = plt.get_cmap("tab20b")
