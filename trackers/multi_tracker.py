@@ -40,9 +40,8 @@ def create_tracker_by_type(tracker_type):
 
     return tracker
 
-
-class Object(MP.Process):
-# class Object():
+# class Object(MP.Process):
+class Object(object):
     def __init__(self, id, frame, class_type, bbox, tracker_type, xyxy=True):
         super(Object, self).__init__()
         self.id = id
@@ -82,17 +81,17 @@ class Object(MP.Process):
         return [self.id, self.class_type, self.bbox, self.tracker_type, self.frames_without_detection]
 
 
-class ParallelUpdates(MP.Process):
-    def __init__(self, obj, frame, queue):
-        super(ParallelUpdates, self).__init__()
-        self.obj = obj
-        self.frame = frame
-        self.queue = queue
-        self.ok = None
+# class ParallelUpdates(MP.Process):
+#     def __init__(self, obj, frame, queue):
+#         super(ParallelUpdates, self).__init__()
+#         self.obj = obj
+#         self.frame = frame
+#         self.queue = queue
+#         self.ok = None
     
-    def run(self):
-        ok = self.obj.update(self.frame)
-        self.queue.put(ok)
+#     def run(self):
+#         ok = self.obj.update(self.frame)
+#         self.queue.put(ok)
         
         
 class MultiTracker:
@@ -129,28 +128,30 @@ class MultiTracker:
         self.objects.append(obj)
         return obj
 
-    def parallel_update(self, frame):
-        jobs = []
-        queue = MP.Queue()
-        for i, obj in enumerate(self.objects):
-            p = ParallelUpdates(obj, frame, queue)
-            jobs.append(p)
-            p.start()
+#     def parallel_update(self, frame):
+#         jobs = []
+#         queue = MP.Queue()
+#         for i, obj in enumerate(self.objects):
+#             p = ParallelUpdates(obj, frame, queue)
+#             jobs.append(p)
+#             p.start()
             
-        [p.join() for p in jobs]
+#         [p.join() for p in jobs]
         
-        number_of_fails = 0
-        while not queue.empty():
-            ok = queue.get()
-            number_of_fails += 1 - int(ok)
-        fails_percentage = float(number_of_fails)/float(len(self.objects))
-        self.logger.debug(f"fails_percentage: {(fails_percentage*100):.2f}%")
-        if fails_percentage < self.failures_threshold:
-            return True
-        return False
+#         number_of_fails = 0
+#         while not queue.empty():
+#             ok = queue.get()
+#             number_of_fails += 1 - int(ok)
+#         fails_percentage = float(number_of_fails)/float(len(self.objects))
+#         self.logger.debug(f"fails_percentage: {(fails_percentage*100):.2f}%")
+#         if fails_percentage < self.failures_threshold:
+#             return True
+#         return False
 
     
     def update(self, frame):
+        if not self.objects:
+            return False
         number_of_fails = 0
         for i, obj in enumerate(self.objects):
             ok = obj.update(frame)
