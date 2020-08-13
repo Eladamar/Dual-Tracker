@@ -1,5 +1,8 @@
 {
-    "video_path": "data/input/moving_cars.mp4",
+    "frame_loader": "SequenceLoader",
+    "frames_path": "/home/eladamar/tracking/data/racing/sequence",
+    "output": "/home/eladamar/tracking/data/racing/",
+    "eval_mode": "True",
     "logger_mode": "debug",
     "classes":  ["person", "car", "bicycle", "motor", "bus", "truck"],
     "Detector": {
@@ -10,7 +13,7 @@
         "conf_thres": 0.6
     },
     "Tracker": {
-        "no_detection_thres": 0,
+        "no_detection_thres": 10,
         "default_tracker": "CSRT",
         "failures_threshold": 0.5,
         "iou_thres": 0.1,
