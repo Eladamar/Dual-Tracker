@@ -8,7 +8,8 @@ import logging
 from prettytable import PrettyTable
 import os
 import multiprocessing as MP
-
+import shutil
+import json
 import time
 
 from utils.utils import bbox_iou, bbox_distance
@@ -112,6 +113,7 @@ class MultiTracker:
         self.no_detection_thres = no_detection_thres
         self.logger = logger
         self.classes = classes
+        self.object_history = {}
 
     def initialize(self, frame, detections, trackerType=None):
         if trackerType is None:
@@ -148,6 +150,28 @@ class MultiTracker:
 #             return True
 #         return False
 
+    def track_history(self):
+        for i, obj in enumerate(self.objects):
+            if obj.frames_without_detection == 0:
+                # make points instead of xywh 
+                x,y,w,h = obj.bbox
+                current_loc = [(x,y),(x,y+h),(x+w,y+h),(x+w,y)]
+            else:
+                current_loc = None
+            try:
+                self.object_history[obj.id].append(current_loc)
+            except KeyError:
+                self.object_history[obj.id] = [current_loc]
+    
+    def write_history(self, output_folder):
+        annotations_folder = os.path.join(output_folder, 'MultiTracker_annotations')
+        if os.path.isdir(annotations_folder):
+            shutil.rmtree(annotations_folder)
+        os.mkdir(annotations_folder)
+        for id, history in self.object_history.items():
+            with open(os.path.join(annotations_folder, f'{id}.txt'), 'w') as f:
+                json.dump(history, f)
+            
     
     def update(self, frame):
         if not self.objects:
@@ -156,6 +180,7 @@ class MultiTracker:
         for i, obj in enumerate(self.objects):
             ok = obj.update(frame)
             number_of_fails += 1 - int(ok)
+            # Todo - maybe remove objects here
         fails_percentage = float(number_of_fails)/float(len(self.objects))
 
         if fails_percentage < self.failures_threshold:
@@ -200,7 +225,8 @@ class MultiTracker:
             # check for greatest intersection over union detection
             if ious[greatest_overlap] > self.iou_thres:
                 self.logger.debug(f"Reinitialize Object id: {obj.id} of type: {obj.class_type} due large overlap")
-                bbox = tuple(np.around(bboxes_array[greatest_overlap]).astype(int)) # conversion for opencv
+                bbox = tuple(map(int, bboxes_array[greatest_overlap]))
+#                 bbox = tuple(np.around(bboxes_array[greatest_overlap]).astype(int)) # conversion for opencv
                 obj.reinitialize(frame, bbox)
                 detections = np.delete(detections, greatest_overlap, axis=0)
                 continue
@@ -210,7 +236,8 @@ class MultiTracker:
             closest_box = relevant_idx[distances[relevant_idx].argmin()] # min distance from matching objects
             if distances[closest_box] < self.dist_thres:
                 self.logger.debug(f"Reinitialize Object id: {obj.id} of type: {obj.class_type} due close distance")
-                bbox = tuple(np.around(bboxes_array[closest_box]).astype(int)) # conversion for opencv
+                bbox = tuple(map(int, bboxes_array[greatest_overlap]))
+#                 bbox = tuple(np.around(bboxes_array[closest_box]).astype(int)) # conversion for opencv
                 obj.reinitialize(frame, bbox)
                 detections = np.delete(detections, closest_box, axis=0)
                 continue
