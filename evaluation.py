@@ -20,24 +20,21 @@ if __name__ == "__main__":
     parser.add_argument('--file', type=str,
                         help='Path to the ground truth file')
     args = parser.parse_args()
-    
-    
+    # load annotations
     with open(args.file, 'r') as f:
         track_annotations = json.load(f)
-  
 
     gt_array = np.loadtxt(args.gt, delimiter=',').reshape(-1,4,2).tolist()
-#     gt = []
-#     with open(args.gt, 'r') as f:
-#         for line in f:
-#             gt.append(line.split()) for line in
 
     ious = []
     for gt, tracked in zip(gt_array, track_annotations):
-#         gt_list = list(gt)
         if tracked is None:
             ious.append(0)
         else:
             ious.append(iou(gt, tracked))
-    
-    print(np.mean(ious))
+    robustness = float(ious.count(0))/float(len(ious))
+    eao = [np.mean(ious[:x+1]) for x in range(len(ious))]
+    print (len(eao))
+    print("precision:", np.mean(ious))
+    print("robustness:", robustness)
+    print("Expected Average Overlap:", np.mean(eao))
