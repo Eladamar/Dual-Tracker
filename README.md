@@ -1,4 +1,4 @@
-# Hybrid Tracker
+# Dual Tracker
 
 ![](./demo.gif)
 
