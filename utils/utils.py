@@ -1,6 +1,8 @@
 import os
 import numpy as np
 import logging
+from shapely.geometry import Polygon
+import matplotlib.pyplot as plt
 
 def bbox_iou(box1, box2, x1y1x2y2=False):
     """
@@ -86,3 +88,38 @@ def get_logger(mode='info', logger_file='logger.txt'):
                             level=level)
     logger = logging.getLogger()
     return logger
+
+
+def iou(pt1, pt2):
+    if any(None in l for l in pt1) or any(None in l for l in pt2):
+        return 0
+    poly1 = Polygon(pt1)
+    poly2 = Polygon(pt2)
+    return poly1.intersection(poly2).area / poly1.union(poly2).area
+
+
+def center_distance(pt1, pt2):
+    center1 = Polygon(pt1).centroid
+    center2 = Polygon(pt2).centroid
+    return center1.distance(center2)
+
+
+def save_figure(x, y, title, x_title, y_title, loc):
+    success_fig = plt.figure()
+    plt.plot(x, y)
+    plt.xlabel(x_title)
+    plt.ylabel(y_title)
+    plt.title(title)
+    success_fig.savefig(loc)
+    
+    
+def convert_df_bbox(df):
+    # convert to points # x,y,w,h
+    gt_array = df.to_numpy()
+    new_array = np.empty((gt_array.shape[0], 8))
+    new_array[:,0], new_array[:,1] = gt_array[:,0], gt_array[:,1]
+    new_array[:,2], new_array[:,3] = gt_array[:,0] + gt_array[:,2], gt_array[:,1]
+    new_array[:,4], new_array[:,5] = gt_array[:,0] + gt_array[:,2], gt_array[:,1] + gt_array[:,3]
+    new_array[:,6], new_array[:,7] = gt_array[:,0], gt_array[:,1] + gt_array[:,3]
+    new_array = new_array.reshape(-1,4,2).tolist()
+    return new_array
