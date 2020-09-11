@@ -150,15 +150,16 @@ class MultiTracker:
 #             return True
 #         return False
 
-    def track_history(self):
+    def track_history(self, frame_number):
         for i, obj in enumerate(self.objects):
             if obj.frames_without_detection == 0:
                 # make points instead of xywh 
                 x,y,w,h = obj.bbox
                 current_loc = [(x,y),(x,y+h),(x+w,y+h),(x+w,y)]
             else:
-                current_loc = None
+                current_loc = [(None,None) for _ in range(4)]
             try:
+                current_loc = [frame_number] + current_loc
                 self.object_history[obj.id].append(current_loc)
             except KeyError:
                 self.object_history[obj.id] = [current_loc]
@@ -169,6 +170,7 @@ class MultiTracker:
             shutil.rmtree(annotations_folder)
         os.mkdir(annotations_folder)
         for id, history in self.object_history.items():
+            # print("ID, history", id, len(history))
             with open(os.path.join(annotations_folder, f'{id}.txt'), 'w') as f:
                 json.dump(history, f)
             
@@ -232,6 +234,7 @@ class MultiTracker:
                 continue
                 
             # check for closest detection
+            # Todo make distance thres relative to speed and frames without detection.
             distances = bbox_distance(cur_bbox, bboxes_array)
             closest_box = relevant_idx[distances[relevant_idx].argmin()] # min distance from matching objects
             if distances[closest_box] < self.dist_thres:

@@ -39,7 +39,7 @@ def track(detector, multiTracker, logger, frame_loader, output_file, eval):
     # Initialize MultiTracker
     multiTracker.initialize(frame, detections)
     if eval:
-        multiTracker.track_history()
+        multiTracker.track_history(1)
         
     # video parameters
     fps = frame_loader.fps
@@ -50,8 +50,8 @@ def track(detector, multiTracker, logger, frame_loader, output_file, eval):
     output = cv2.VideoWriter(os.path.join(output_file, 'output.mp4'), fourcc, fps, (width,height), isColor=True)
 
     frame_generator = frame_loader.get_next_frame()
-
-    for k, frame in enumerate(frame_generator, 1):
+    eval_counter = 0
+    for k, frame in enumerate(frame_generator, 2):
         thickness = round(1e-3 * (frame.shape[0] + frame.shape[1]) / 2) + 1
 
         # Start timer
@@ -80,7 +80,8 @@ def track(detector, multiTracker, logger, frame_loader, output_file, eval):
         cv2.putText(frame, f"FPS: {(int(fps))}", (75, 75), 0, thickness/3, (50, 170, 50), thickness)
 
         if eval:
-            multiTracker.track_history()
+            eval_counter += 1
+            multiTracker.track_history(k)
         resize = cv2.resize(frame, (width, height), interpolation=cv2.INTER_LINEAR)
 #         if k % 3 == 0:
         output.write(cv2.cvtColor(resize, cv2.COLOR_RGB2BGR))
@@ -89,7 +90,7 @@ def track(detector, multiTracker, logger, frame_loader, output_file, eval):
     logger.debug(f"Total time: {time.time()-begin_time}")
     if eval:
         multiTracker.write_history(output_file)
-
+    print ("eval_counter", eval_counter)
         
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
