@@ -10,7 +10,6 @@ trained on [stanford dataset](https://cvgl.stanford.edu/projects/uav_data/) and 
 spp:  
 <img src="./docs/spp.PNG" height="500" width="320"/>  
 model is taken from [ultralytics](https://github.com/ultralytics/yolov3)
-http://aiskyeye.com/
 ## Tracker
 used opencv trackers
 
