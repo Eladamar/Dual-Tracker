@@ -91,7 +91,7 @@ def get_logger(mode='info', logger_file='logger.txt'):
 
 
 def iou(pt1, pt2):
-    if any(None in l for l in pt1) or any(None in l for l in pt2):
+    if pt1 != pt1 or pt2 != pt2 or any(None in l for l in pt1) or any(None in l for l in pt2):
         return 0
     poly1 = Polygon(pt1)
     poly2 = Polygon(pt2)
@@ -99,14 +99,22 @@ def iou(pt1, pt2):
 
 
 def center_distance(pt1, pt2):
+    if pt1 != pt1 or pt2 != pt2 or any(None in l for l in pt1) or any(None in l for l in pt2):
+        return np.inf
     center1 = Polygon(pt1).centroid
     center2 = Polygon(pt2).centroid
     return center1.distance(center2)
 
 
-def save_figure(x, y, title, x_title, y_title, loc):
+def save_figure(x, y, title, x_title, y_title, loc, scatter=False):
     success_fig = plt.figure()
-    plt.plot(x, y)
+    if scatter:
+        plt.scatter(x, y)
+        plt.hlines(np.mean(y), 0, len(y), 'r')
+        plt.hlines(np.mean([yy for yy in y if yy != 0]), 0, len(y), 'b')
+
+    else:
+        plt.plot(x, y)
     plt.xlabel(x_title)
     plt.ylabel(y_title)
     plt.title(title)
@@ -123,3 +131,16 @@ def convert_df_bbox(df):
     new_array[:,6], new_array[:,7] = gt_array[:,0], gt_array[:,1] + gt_array[:,3]
     new_array = new_array.reshape(-1,4,2).tolist()
     return new_array
+
+
+def calc_robustness(ious):
+    return 1 - float(ious.count(0))/float(len(ious))
+
+
+def calc_eao(ious):
+    eao = [np.mean(ious[:x+1]) for x in range(len(ious))]
+    return np.mean(eao)
+
+
+def calc_precision(ious):
+    return np.mean(ious)

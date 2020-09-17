@@ -4,7 +4,6 @@ import argparse
 import numpy as np
 from shapely.geometry import Polygon
 import matplotlib.pyplot as plt
-from scipy.interpolate import BSpline, make_interp_spline
 
 
 from utils import *
