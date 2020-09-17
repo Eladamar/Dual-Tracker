@@ -8,7 +8,7 @@ inspired by [UAVH](https://openaccess.thecvf.com/content_CVPRW_2019/html/UAVisio
 YOLOv3 with spatial pyramid pooling  
 trained on stanford dataset and visdrone.  
 spp:  
-<img src="./spp.PNG" height="500" width="320"/>  
+<img src="./docs/spp.PNG" height="500" width="320"/>  
 model is taken from [ultralytics](https://github.com/ultralytics/yolov3)
 
 ## Tracker
