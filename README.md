@@ -6,11 +6,11 @@ inspired by [UAVH](https://openaccess.thecvf.com/content_CVPRW_2019/html/UAVisio
 ## Detector
 
 YOLOv3 with spatial pyramid pooling  
-trained on stanford dataset and visdrone.  
+trained on [stanford dataset](https://cvgl.stanford.edu/projects/uav_data/) and [VisDrone](http://aiskyeye.com/).  
 spp:  
 <img src="./docs/spp.PNG" height="500" width="320"/>  
 model is taken from [ultralytics](https://github.com/ultralytics/yolov3)
-
+http://aiskyeye.com/
 ## Tracker
 used opencv trackers
 
