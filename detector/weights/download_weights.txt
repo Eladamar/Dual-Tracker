@@ -1,0 +1,5 @@
+
+Weights of the pre-trained model over VisDrone and SDD can be found here:
+https://drive.google.com/file/d/1_zSBfFQqhdWXoelHl9LlnwoqcL9JwstS/view
+
+About 100 epochs on RTX 2080
