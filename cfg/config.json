@@ -1,14 +1,14 @@
 {
     "frame_loader": "SequenceLoader",
-    "frames_path": "/home/eladamar/tracking/data/racing/sequence",
-    "output": "/home/eladamar/tracking/data/racing/",
+    "frames_path": "data/VisDrone2019-MOT-test-dev/sequences/uav0000009_03358_v/",
+    "output": "data/VisDrone2019-MOT-test-dev/sequences/uav0000009_03358_v/",
     "eval_mode": "True",
     "logger_mode": "debug",
     "classes":  ["person", "car", "bicycle", "motor", "bus", "truck"],
     "Detector": {
         "type": "YOLO",
-        "weights_path": "/home/eladamar/tracking/detector/weights/spp_background_anchors.pt",
-        "config_file": "/home/eladamar/tracking/detector/cfg/yolov3-spp.cfg",
+        "weights_path": "detector/weights/spp_background_anchors.pt",
+        "config_file": "detector/cfg/yolov3-spp.cfg",
         "nms_thres": 0.4,
         "conf_thres": 0.6
     },
