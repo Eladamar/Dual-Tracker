@@ -15,7 +15,7 @@ model is taken from [ultralytics](https://github.com/ultralytics/yolov3)
 used opencv trackers  
 
 ### More References
-Spatial Pyramid Pooling paper https://ieeexplore.ieee.org/abstract/document/7005506
+Spatial Pyramid Pooling paper https://ieeexplore.ieee.org/abstract/document/7005506  
 DCFCSR https://arxiv.org/pdf/1611.08461.pdf
   
 weights can be found [here](https://drive.google.com/file/d/1_zSBfFQqhdWXoelHl9LlnwoqcL9JwstS/view)
